@@ -1,0 +1,283 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String   @id @default(uuid())
+  email             String   @unique
+  passwordHash      String   @map("password_hash")
+  fullName          String   @map("full_name")
+  phone             String?
+  avatarUrl         String?  @map("avatar_url")
+  roleId            String   @map("role_id")
+  isActive          Boolean  @default(true) @map("is_active")
+  twoFactorEnabled  Boolean  @default(false) @map("two_factor_enabled")
+  twoFactorSecret   String?  @map("two_factor_secret")
+  emailVerified     Boolean  @default(false) @map("email_verified")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  role              Role     @relation(fields: [roleId], references: [id])
+  businesses        Business[]
+  jobs              Job[]
+  announcements     Announcement[]
+  events            Event[]
+  gallery           Gallery[]
+  leaders           Leader[]
+  pageContent       PageContent[]
+  news              News[]
+  activityLogs      ActivityLog[]
+
+  @@map("users")
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  users       User[]
+  permissions RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  resource  String
+  action    String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  roles     RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String @map("role_id")
+  permissionId String @map("permission_id")
+
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model Business {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  sector      String?
+  area        String?
+  logoUrl     String?  @map("logo_url")
+  phone       String?
+  email       String?
+  whatsapp    String?
+  website     String?
+  address     String?
+  isVerified  Boolean  @default(false) @map("is_verified")
+  rating      Float    @default(0.0)
+  createdById String   @map("created_by_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  createdBy   User     @relation(fields: [createdById], references: [id])
+
+  @@index([sector])
+  @@index([area])
+  @@index([isVerified])
+  @@map("businesses")
+}
+
+model Job {
+  id              String   @id @default(uuid())
+  title           String
+  companyName     String   @map("company_name")
+  description     String
+  requirements    String?
+  location        String?
+  jobType         String?  @map("job_type")
+  salaryRange     String?  @map("salary_range")
+  applicationEmail String? @map("application_email")
+  applicationUrl  String?  @map("application_url")
+  deadline        DateTime?
+  isActive        Boolean  @default(true) @map("is_active")
+  createdById     String   @map("created_by_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  createdBy       User     @relation(fields: [createdById], references: [id])
+
+  @@index([isActive])
+  @@index([deadline])
+  @@map("jobs")
+}
+
+model Announcement {
+  id          String    @id @default(uuid())
+  title       String
+  content     String
+  category    String?
+  priority    String    @default("normal")
+  imageUrl    String?   @map("image_url")
+  isPublished Boolean   @default(false) @map("is_published")
+  publishedAt DateTime? @map("published_at")
+  createdById String    @map("created_by_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  createdBy   User      @relation(fields: [createdById], references: [id])
+
+  @@index([isPublished, publishedAt])
+  @@map("announcements")
+}
+
+model Event {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  location    String?
+  startDate   DateTime  @map("start_date")
+  endDate     DateTime? @map("end_date")
+  imageUrl    String?   @map("image_url")
+  organizer   String?
+  contactInfo String?   @map("contact_info")
+  isPublished Boolean   @default(false) @map("is_published")
+  createdById String    @map("created_by_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  createdBy   User      @relation(fields: [createdById], references: [id])
+
+  @@index([startDate, endDate])
+  @@map("events")
+}
+
+model Gallery {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  mediaType   String   @map("media_type")
+  mediaUrl    String   @map("media_url")
+  thumbnailUrl String? @map("thumbnail_url")
+  category    String?
+  isPublished Boolean  @default(false) @map("is_published")
+  createdById String   @map("created_by_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  createdBy   User     @relation(fields: [createdById], references: [id])
+
+  @@map("gallery")
+}
+
+model Feedback {
+  id        String   @id @default(uuid())
+  type      String
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String
+  status    String   @default("pending")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("feedback")
+}
+
+model Leader {
+  id          String   @id @default(uuid())
+  name        String
+  title       String
+  position    String   // e.g., "MP Sunyani East", "MP Sunyani West", "Chief of Sunyani", "Mayor", etc.
+  constituency String? // For MPs: "Sunyani East" or "Sunyani West"
+  imageUrl    String?  @map("image_url")
+  message     String   // 1 paragraph message from the leader
+  email       String?
+  phone       String?
+  order       Int      @default(0) // For sorting display order
+  isActive    Boolean  @default(true) @map("is_active")
+  createdById String   @map("created_by_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  createdBy   User     @relation(fields: [createdById], references: [id])
+
+  @@index([position])
+  @@index([isActive])
+  @@index([order])
+  @@map("leaders")
+}
+
+model PageContent {
+  id          String   @id @default(uuid())
+  page        String   // e.g., "about", "home", "contact"
+  section     String   // e.g., "hero", "history", "culture"
+  title       String?
+  content     String   // HTML or markdown content
+  imageUrl    String?  @map("image_url")
+  order       Int      @default(0)
+  isActive    Boolean  @default(true) @map("is_active")
+  createdById String   @map("created_by_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  createdBy   User     @relation(fields: [createdById], references: [id])
+
+  @@unique([page, section])
+  @@index([page, section])
+  @@index([isActive])
+  @@map("page_content")
+}
+
+model News {
+  id          String    @id @default(uuid())
+  title       String
+  slug        String    @unique
+  excerpt     String?   // Short summary for cards
+  content     String    // Full article content
+  imageUrl    String?   @map("image_url")
+  category    String?
+  tags        String[]  // Array of tags
+  author      String?   // Author name
+  isPublished Boolean   @default(false) @map("is_published")
+  publishedAt DateTime? @map("published_at")
+  views       Int       @default(0)
+  createdById String    @map("created_by_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  createdBy   User      @relation(fields: [createdById], references: [id])
+
+  @@index([isPublished, publishedAt])
+  @@index([slug])
+  @@index([category])
+  @@map("news")
+}
+
+model ActivityLog {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  action     String
+  resource   String?
+  resourceId String?  @map("resource_id")
+  details    Json?
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("activity_logs")
+}

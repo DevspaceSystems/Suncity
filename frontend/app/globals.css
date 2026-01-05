@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&display=swap');
+
+@layer base {
+  :root {
+    /* Premium Bono Palette */
+    --primary: #D4AF37;
+    /* Metallic Gold */
+    --primary-light: #F4D03F;
+    --primary-dark: #996515;
+
+    --secondary: #1E3F20;
+    /* Deep Forest Green */
+    --secondary-light: #2D5A27;
+    --secondary-dark: #0F2A10;
+
+    --accent: #B22222;
+    /* Royal Terracotta */
+    --accent-light: #E34234;
+    --accent-dark: #800000;
+
+    --foreground: #1A1A1A;
+    --background: #FFFFFF;
+  }
+
+  body {
+    @apply font-sans text-foreground bg-white selection:bg-primary/30 antialiased overflow-x-hidden;
+    background-image:
+      radial-gradient(at 0% 0%, rgba(212, 175, 55, 0.03) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(30, 63, 32, 0.03) 0px, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display tracking-tighter text-secondary;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-secondary hover:bg-primary text-white font-bold py-4 px-10 rounded-2xl transition-all duration-500 shadow-2xl shadow-secondary/20 hover:shadow-primary/20 active:scale-95 text-center;
+  }
+
+  .glass-card {
+    @apply bg-white/60 backdrop-blur-3xl border border-white/40 shadow-2xl shadow-secondary/5 rounded-[40px] overflow-hidden transition-all duration-700;
+  }
+
+  .container-custom {
+    @apply max-w-7xl mx-auto px-6 lg:px-12;
+  }
+}
+
+@layer utilities {
+  .font-sans {
+    font-family: 'Outfit', sans-serif;
+  }
+
+  .font-display {
+    font-family: 'Playfair Display', serif;
+  }
+
+  .gold-gradient {
+    background: linear-gradient(135deg, #D4AF37, #F4D03F, #996515);
+  }
+
+  .gold-gradient-diagonal {
+    background: linear-gradient(45deg, #D4AF37, #F4D03F, #996515);
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(30px);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-20px);
+    }
+
+    100% {
+      transform: translateY(0px);
+    }
+  }
+}

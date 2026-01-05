@@ -1,0 +1,32 @@
+{
+    "name": "sunyani-municipal-platform",
+    "version": "1.0.0",
+    "description": "Official digital platform for Sunyani Municipal Assembly, Ghana",
+    "private": true,
+    "workspaces": [
+        "frontend",
+        "admin"
+    ],
+    "scripts": {
+        "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:admin\"",
+        "dev:frontend": "cd frontend && npm run dev",
+        "dev:admin": "cd admin && npm run dev",
+        "build": "npm run build:frontend && npm run build:admin",
+        "build:frontend": "cd frontend && npm run build",
+        "build:admin": "cd admin && npm run build",
+        "test": "npm run test:frontend",
+        "test:frontend": "cd frontend && npm run test"
+    },
+    "keywords": [
+        "municipal",
+        "government",
+        "ghana",
+        "sunyani",
+        "digital-platform"
+    ],
+    "author": "Sunyani Municipal Assembly",
+    "license": "UNLICENSED",
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    }
+}
